@@ -37,7 +37,6 @@ public class Courier {
         return new Courier(login, null, firstName);
     }
 
-
     @Override
     public String toString() {
         return "Courier {" + "login:" + login + "," + "password:" + password + "," + "firstName:" + firstName + "}";

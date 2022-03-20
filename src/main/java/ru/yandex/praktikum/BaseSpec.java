@@ -11,7 +11,6 @@ public class BaseSpec {
     protected RequestSpecification getBaseSpec() {
         return new RequestSpecBuilder().setContentType(ContentType.JSON).setBaseUri(BASE_URL).build();
     }
-
 }
 
 

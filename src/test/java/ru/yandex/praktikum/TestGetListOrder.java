@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.yandex.praktikum.Order.OrderClient;
 
-
 import static org.hamcrest.Matchers.notNullValue;
 
 public class TestGetListOrder {
@@ -27,5 +26,4 @@ public class TestGetListOrder {
         Response response = orderClient.getListOrder();
         response.then().assertThat().statusCode(200).and().body("orders", notNullValue());
     }
-
 }

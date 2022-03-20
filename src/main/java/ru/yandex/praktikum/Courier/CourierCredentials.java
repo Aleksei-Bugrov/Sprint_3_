@@ -34,5 +34,4 @@ public class CourierCredentials {
     public String toString() {
         return "CourierCredentials {" + "login:" + login + "," + "password:" + password + "}";
     }
-
 }

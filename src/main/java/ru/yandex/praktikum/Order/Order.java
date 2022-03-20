@@ -14,7 +14,6 @@ public class Order {
     public String comment;
     public List<String> color;
 
-
     public Order(List<String> color) {
         this.firstName = "Ivan";
         this.lastName = "Ivanov";

@@ -2,6 +2,7 @@ package ru.yandex.praktikum;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
+import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +10,11 @@ import ru.yandex.praktikum.Courier.Courier;
 import ru.yandex.praktikum.Courier.CourierClient;
 import ru.yandex.praktikum.Courier.CourierCredentials;
 
-import static org.junit.Assert.assertEquals;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 
 public class TestWhenLoginCourier {
 
@@ -25,9 +30,12 @@ public class TestWhenLoginCourier {
     @Description("Такой учетки нет в базе")
     public void loginNonExistentCourier() {
         Courier courier = Courier.getAllRandom();
-        String errorCode = courierClient.requestForNonExistentLoginAndPassword(CourierCredentials.from(courier));
+        ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(courier));
+        int statusCode = loginResponse.extract().statusCode();
+        String message = loginResponse.extract().path("message");
 
-        assertEquals("Что-то пошло не так...", errorCode, "Учетная запись не найдена");
+        assertThat("Прошла авторизация несуществующего пользователя", statusCode, equalTo(SC_NOT_FOUND));
+        assertThat("Ошибка в тексте", message, equalTo("Учетная запись не найдена"));
     }
 
     @Test
@@ -39,10 +47,12 @@ public class TestWhenLoginCourier {
         courierClient.login(CourierCredentials.from(firstCourier));
 
         Courier secondCourier = new Courier(firstCourier.login, firstCourier.password + RandomStringUtils.randomAlphabetic(1), firstCourier.firstName);
-        String errorCode = courierClient.requestForNonExistentLoginAndPassword(CourierCredentials.from(secondCourier));
+        ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(secondCourier));
+        int statusCode = loginResponse.extract().statusCode();
+        String message = loginResponse.extract().path("message");
 
-        assertEquals("Что-то пошло не так...", errorCode, "Учетная запись не найдена");
-
+        assertThat("Успешная авторизация с неверным паролем", statusCode, equalTo(SC_NOT_FOUND));
+        assertThat("Ошибка в тексте", message, equalTo("Учетная запись не найдена"));
     }
 
     @Test
@@ -54,9 +64,12 @@ public class TestWhenLoginCourier {
         courierClient.login(CourierCredentials.from(firstCourier));
 
         Courier secondCourier = new Courier(firstCourier.login + RandomStringUtils.randomAlphabetic(1), firstCourier.password, firstCourier.firstName);
-        String errorCode = courierClient.requestForNonExistentLoginAndPassword(CourierCredentials.from(secondCourier));
+        ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(secondCourier));
+        int statusCode = loginResponse.extract().statusCode();
+        String message = loginResponse.extract().path("message");
 
-        assertEquals("Что-то пошло не так...", errorCode, "Учетная запись не найдена");
+        assertThat("Успешная авторизация с неверным паролем", statusCode, equalTo(SC_NOT_FOUND));
+        assertThat("Ошибка в тексте", message, equalTo("Учетная запись не найдена"));
 
     }
 
@@ -69,9 +82,13 @@ public class TestWhenLoginCourier {
         courierClient.login(CourierCredentials.from(firstCourier));
 
         Courier secondCourier = new Courier(firstCourier.login, "", firstCourier.firstName);
-        String errorCode = courierClient.requestWithoutLogin(CourierCredentials.from(secondCourier));
+        ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(secondCourier));
+        int statusCode = loginResponse.extract().statusCode();
+        String message = loginResponse.extract().path("message");
 
-        assertEquals("Что-то пошло не так...", errorCode, "Недостаточно данных для входа");
+        assertThat("Успешная авторизация с неверным паролем", statusCode, equalTo(SC_BAD_REQUEST));
+        assertThat("Ошибка в тексте", message, equalTo("Недостаточно данных для входа"));
+
 
     }
 
@@ -84,9 +101,12 @@ public class TestWhenLoginCourier {
         courierClient.login(CourierCredentials.from(firstCourier));
 
         Courier secondCourier = new Courier("", firstCourier.password, firstCourier.firstName);
-        String errorCode = courierClient.requestWithoutLogin(CourierCredentials.from(secondCourier));
+        ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(secondCourier));
+        int statusCode = loginResponse.extract().statusCode();
+        String message = loginResponse.extract().path("message");
 
-        assertEquals("Что-то пошло не так...", errorCode, "Недостаточно данных для входа");
+        assertThat("Успешная авторизация с неверным паролем", statusCode, equalTo(SC_BAD_REQUEST));
+        assertThat("Ошибка в тексте", message, equalTo("Недостаточно данных для входа"));
 
     }
 }

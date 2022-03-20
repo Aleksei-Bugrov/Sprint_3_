@@ -2,7 +2,6 @@ package ru.yandex.praktikum;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,19 +12,17 @@ import ru.yandex.praktikum.Order.OrderClient;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
-
 @RunWith(Parameterized.class)
-
 
 public class TestCreateOrder {
 
     private final List<String> color;
     private final int expected;
     public OrderClient orderClient;
-
 
     public TestCreateOrder(List<String> color, int expected) {
         this.color = color;
@@ -35,7 +32,6 @@ public class TestCreateOrder {
     @Parameterized.Parameters
     public static Object[][] getOrder() {
         return new Object[][]{{List.of("BLACK"), 201}, {List.of("GREY"), 201}, {List.of("BLACK", "GREY"), 201}, {List.of(""), 201}
-
         };
     }
 
@@ -54,7 +50,6 @@ public class TestCreateOrder {
         int orderId = orderClient.getOrderTrack(order);
 
         assertEquals(actual, expected);
-        MatcherAssert.assertThat("Трек номер не создан", orderId, is(not(0)));
-
+        assertThat("Трек номер не создан", orderId, is(not(0)));
     }
 }
