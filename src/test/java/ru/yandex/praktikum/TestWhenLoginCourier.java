@@ -4,6 +4,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.yandex.praktikum.Courier.Courier;
@@ -19,10 +20,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class TestWhenLoginCourier {
 
     private CourierClient courierClient;
+    private int courierId;
 
     @Before
     public void setUp() {
         courierClient = new CourierClient();
+    }
+
+    @After
+    public void tearDown() {
+        if (courierId != 0) {
+            courierClient.delete(courierId);
+        }
     }
 
     @Test
@@ -44,7 +53,8 @@ public class TestWhenLoginCourier {
     public void courierLoginWithoutPass() {
         Courier firstCourier = Courier.getAllRandom();
         courierClient.create(firstCourier);
-        courierClient.login(CourierCredentials.from(firstCourier));
+        ValidatableResponse firstLoginResponse = courierClient.login(CourierCredentials.from(firstCourier));
+        courierId = firstLoginResponse.extract().path("id");
 
         Courier secondCourier = new Courier(firstCourier.login, firstCourier.password + RandomStringUtils.randomAlphabetic(1), firstCourier.firstName);
         ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(secondCourier));
@@ -61,7 +71,8 @@ public class TestWhenLoginCourier {
     public void courierLoginWithoutLogin() {
         Courier firstCourier = Courier.getAllRandom();
         courierClient.create(firstCourier);
-        courierClient.login(CourierCredentials.from(firstCourier));
+        ValidatableResponse firstLoginResponse = courierClient.login(CourierCredentials.from(firstCourier));
+        courierId = firstLoginResponse.extract().path("id");
 
         Courier secondCourier = new Courier(firstCourier.login + RandomStringUtils.randomAlphabetic(1), firstCourier.password, firstCourier.firstName);
         ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(secondCourier));
@@ -70,7 +81,6 @@ public class TestWhenLoginCourier {
 
         assertThat("Успешная авторизация с неверным паролем", statusCode, equalTo(SC_NOT_FOUND));
         assertThat("Ошибка в тексте", message, equalTo("Учетная запись не найдена"));
-
     }
 
     @Test
@@ -79,7 +89,8 @@ public class TestWhenLoginCourier {
     public void courierLoginFromNullPass() {
         Courier firstCourier = Courier.getAllRandom();
         courierClient.create(firstCourier);
-        courierClient.login(CourierCredentials.from(firstCourier));
+        ValidatableResponse firstLoginResponse = courierClient.login(CourierCredentials.from(firstCourier));
+        courierId = firstLoginResponse.extract().path("id");
 
         Courier secondCourier = new Courier(firstCourier.login, "", firstCourier.firstName);
         ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(secondCourier));
@@ -88,8 +99,6 @@ public class TestWhenLoginCourier {
 
         assertThat("Успешная авторизация с неверным паролем", statusCode, equalTo(SC_BAD_REQUEST));
         assertThat("Ошибка в тексте", message, equalTo("Недостаточно данных для входа"));
-
-
     }
 
     @Test
@@ -98,7 +107,8 @@ public class TestWhenLoginCourier {
     public void courierLoginFromNullLogin() {
         Courier firstCourier = Courier.getAllRandom();
         courierClient.create(firstCourier);
-        courierClient.login(CourierCredentials.from(firstCourier));
+        ValidatableResponse firstLoginResponse = courierClient.login(CourierCredentials.from(firstCourier));
+        courierId = firstLoginResponse.extract().path("id");
 
         Courier secondCourier = new Courier("", firstCourier.password, firstCourier.firstName);
         ValidatableResponse loginResponse = courierClient.login(CourierCredentials.from(secondCourier));
@@ -107,6 +117,5 @@ public class TestWhenLoginCourier {
 
         assertThat("Успешная авторизация с неверным паролем", statusCode, equalTo(SC_BAD_REQUEST));
         assertThat("Ошибка в тексте", message, equalTo("Недостаточно данных для входа"));
-
     }
 }
