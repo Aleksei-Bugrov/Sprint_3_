@@ -10,7 +10,7 @@ public class CourierClient extends BaseSpec {
 
     public final String PATH = BASE_URL + "courier/";
 
-    @Step("Create courier {courier}")
+    @Step("Создание курьера")
     public ValidatableResponse create(Courier courier) {
         return given()
                 .spec(getBaseSpec())
@@ -20,7 +20,7 @@ public class CourierClient extends BaseSpec {
                 .then();
     }
 
-    @Step("Login as {courierCredentials}")
+    @Step("Авторизация курьера")
     public ValidatableResponse login(CourierCredentials courierCredentials) {
         return given()
                 .spec(getBaseSpec())
@@ -30,7 +30,7 @@ public class CourierClient extends BaseSpec {
                 .then();
     }
 
-    @Step("Delete courier {courierId}")
+    @Step("Удаление курьера")
     public void delete(int courierId) {
         given()
                 .spec(getBaseSpec())

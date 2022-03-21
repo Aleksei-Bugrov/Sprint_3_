@@ -22,8 +22,7 @@ public class TestGetListOrder {
     @DisplayName("Получение списка заказов")
     @Description("Проверяем, что в списке заказов, есть данные")
     public void getListOrder() {
-
         Response response = orderClient.getListOrder();
-        response.then().assertThat().statusCode(200).and().body("orders", notNullValue());
+        response.then().body("orders", notNullValue());
     }
 }
