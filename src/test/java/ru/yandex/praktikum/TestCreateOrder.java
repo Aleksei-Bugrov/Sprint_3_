@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-
 public class TestCreateOrder {
 
     private final List<String> color;
