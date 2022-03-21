@@ -11,10 +11,10 @@ import ru.yandex.praktikum.Order.OrderClient;
 
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class TestCreateOrder {
@@ -48,7 +48,7 @@ public class TestCreateOrder {
         int actual = orderClient.createOrder(order);
         int orderId = orderClient.getOrderTrack(order);
 
-        assertEquals(actual, expected);
+        assertThat("Заказ не создался, ошибка статус кода", actual, equalTo(expected));
         assertThat("Трек номер не создан", orderId, is(not(0)));
     }
 }
